@@ -23,7 +23,7 @@
 #[test_only]
 module my_first_package::my_module_tests {
     use sui::test_scenario::{Self, Scenario};
-    use my_first_package::my_module::{RPS_Game};
+    use my_first_package::my_module::{RPSLS_Game};
     use std::hash;
 
    #[test]
@@ -41,7 +41,7 @@ fun test_game() {
     test_prove_1st_move(2, b"hello", 1, 0, p1, scenario);
     // scenario.next_tx(p1);
     // {
-    //     let mut game_val = scenario.take_shared<RPS_Game>();
+    //     let mut game_val = scenario.take_shared<RPSLS_Game>();
     //     let game = &mut game_val;
     //     // This will NOT reset the shoot because thats not allowed
     //     game.make_move(2, scenario.ctx());
@@ -64,7 +64,7 @@ fun test_game() {
         // Any player can place a mark on it directly.
         scenario.next_tx(player);
         {
-            let mut game_val = scenario.take_shared<RPS_Game>();
+            let mut game_val = scenario.take_shared<RPSLS_Game>();
             let game = &mut game_val;
             let mut combined = salt;
             combined.push_back<u8>(shoot);
@@ -83,7 +83,7 @@ fun test_game() {
         // Any player can place a mark on it directly.
         scenario.next_tx(player);
         {
-            let mut game_val = scenario.take_shared<RPS_Game>();
+            let mut game_val = scenario.take_shared<RPSLS_Game>();
             let game = &mut game_val;
             game.do_2nd_shoot(shoot, scenario.ctx());
             test_scenario::return_shared(game_val);
@@ -102,7 +102,7 @@ fun test_game() {
         // Any player can place a mark on it directly.
         scenario.next_tx(player);
         {
-            let mut game_val = scenario.take_shared<RPS_Game>();
+            let mut game_val = scenario.take_shared<RPSLS_Game>();
             let game = &mut game_val;
             game.prove_1st_shoot(salt, shoot, scenario.ctx());
             assert!(game.wins1() == wins1 && game.wins2() == wins2, 1);
