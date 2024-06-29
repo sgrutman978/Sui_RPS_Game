@@ -1,21 +1,17 @@
 module my_first_package::my_module {
     use std::hash;
+    // use sui::object::{UID, id};
 
     const EInvalidShoot: u64 = 0;
 
-// public fun create_profile(ctx: &mut TxContext): Game {
-//     Profile {
-//         id: object::new(ctx),
-//         wins1: 0,
-//         wins2: 0,
-//     }
-// }
+    public struct GameParticipant has key, store {
+        id: UID,
+        game_addy: address
+    }
 
     public struct RPS_Game has key {
         id: UID,
-        // gameboard: vector<vector<u8>>,
-        // cur_turn: u8,
-        // game_status: u8,
+        game_status: u8, //current turn, TODO check for your turn
         games: u8,
         shoot1: vector<u8>,
         shoot2: u8,
@@ -25,11 +21,33 @@ module my_first_package::my_module {
         player2: address,
         wins1: u8,
         wins2: u8,
+        playTo: u8,
     }
 
+    // public struct Profile has key, store {
+    //     id: UID,
+    //     points: u8,
+    //     wins: u8,
+    // }
+
+    // public fun create_profile(ctx: &mut TxContext): Profile {
+    //     Profile {
+    //         id: object::new(ctx),
+    //         points: 0,
+    //         wins: 0,
+    //     }
+    // }
+
+// public fun get_uid(obj: &RPS_Game): UID {
+//         obj.id
+//     }
+
     public fun new_game(/*player1_profile: &mut Profile, player2_profile: &mut Profile,*/ player1_addy: address, player2_addy: address, ctx: &mut TxContext) {
-        let game = RPS_Game {
-            id: object::new(ctx),
+        let uid = object::new(ctx);
+        let game_addy = object::uid_to_address(&uid);
+        let game2 = RPS_Game {
+            id: uid,
+            game_status: 0,
             games: 0,
             shoot1: b"",
             shoot2: 0,
@@ -40,10 +58,35 @@ module my_first_package::my_module {
             wins1: 0,
             wins2: 0,
             player1: player1_addy, //ctx.sender(), 
-            player2: player2_addy
+            player2: player2_addy,
+            playTo: 0
         };
-        transfer::share_object(game);
+        // let RPS_Game { id, game_status, games, shoot1, shoot2, who_shot_first, 
+        // proved_first_shoot, wins1, wins2, player1, player2, playTo } = game2;
+        
+        // transfer::transfer(gp2, player2_addy);
+        transfer::share_object(game2);
+        let gp1 = create_game_participant(game_addy, ctx);
+        let gp2 = create_game_participant(game_addy, ctx);
+        // uuid(copy id, ctx)
+        transfer::transfer(gp1, player1_addy);
+        transfer::transfer(gp2, player2_addy);
     }
+
+    public fun create_game_participant(game_addy: address, ctx: &mut TxContext) : GameParticipant{
+        GameParticipant {
+            id: object::new(ctx),
+            game_addy: game_addy,
+        }
+    }
+
+    // public fun uuid(uid: UID, ctx: &mut TxContext): GameParticipant{
+    //     GameParticipant {
+    //         id: object::new(ctx),
+    //         game_addy: uid
+    //     }
+    // }
+
 
     public fun do_1st_shoot(game: &mut RPS_Game, shoot: vector<u8>, ctx: &mut TxContext) {
         if (game.shoot1 == b"" && game.shoot2 == 0 && (game.player1 == ctx.sender() || game.player2 == ctx.sender())) {
