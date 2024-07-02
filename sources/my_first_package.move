@@ -1,6 +1,5 @@
 module my_first_package::my_module {
     use std::hash;
-    // use sui::object::{UID, id};
 
     const EInvalidShoot: u64 = 0;
 
@@ -24,24 +23,6 @@ module my_first_package::my_module {
         playTo: u8,
     }
 
-    // public struct Profile has key, store {
-    //     id: UID,
-    //     points: u8,
-    //     wins: u8,
-    // }
-
-    // public fun create_profile(ctx: &mut TxContext): Profile {
-    //     Profile {
-    //         id: object::new(ctx),
-    //         points: 0,
-    //         wins: 0,
-    //     }
-    // }
-
-// public fun get_uid(obj: &RPS_Game): UID {
-//         obj.id
-//     }
-
     public fun new_game(/*player1_profile: &mut Profile, player2_profile: &mut Profile,*/ player1_addy: address, player2_addy: address, ctx: &mut TxContext) {
         let uid = object::new(ctx);
         let game_addy = object::uid_to_address(&uid);
@@ -53,22 +34,15 @@ module my_first_package::my_module {
             shoot2: 0,
             who_shoots_first: 1,
             proved_first_shoot: 0,
-            // profile1: player1_profile, //my_first_package::my_module
-            // profile2: player2_profile,
             wins1: 0,
             wins2: 0,
             player1: player1_addy, //ctx.sender(), 
             player2: player2_addy,
             playTo: 0
         };
-        // let RPS_Game { id, game_status, games, shoot1, shoot2, who_shot_first, 
-        // proved_first_shoot, wins1, wins2, player1, player2, playTo } = game2;
-        
-        // transfer::transfer(gp2, player2_addy);
         transfer::share_object(game2);
         let gp1 = create_game_participant(game_addy, ctx);
         let gp2 = create_game_participant(game_addy, ctx);
-        // uuid(copy id, ctx)
         transfer::transfer(gp1, player1_addy);
         transfer::transfer(gp2, player2_addy);
     }
@@ -79,14 +53,6 @@ module my_first_package::my_module {
             game_addy: game_addy,
         }
     }
-
-    // public fun uuid(uid: UID, ctx: &mut TxContext): GameParticipant{
-    //     GameParticipant {
-    //         id: object::new(ctx),
-    //         game_addy: uid
-    //     }
-    // }
-
 
     public fun do_1st_shoot(game: &mut RPS_Game, shoot: vector<u8>, ctx: &mut TxContext) {
         assert!(game.status == 0 , EInvalidShoot);
@@ -136,6 +102,7 @@ module my_first_package::my_module {
             };
             game.shoot1 = b"";
             game.shoot2 = 0;
+            game.status = 0;
             if (game.who_shoots_first == 1){
                 game.who_shoots_first = 2;
             } else {
