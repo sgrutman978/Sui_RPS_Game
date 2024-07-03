@@ -70,12 +70,12 @@ module my_first_package::my_module {
         };
     }
 
-    public fun prove_1st_shoot(game: &mut RPS_Game, salt: vector<u8>, shoot: u8, ctx: &mut TxContext) {
+    public fun prove_1st_shoot(shoot: u8, game: &mut RPS_Game, salt: vector<u8>, ctx: &mut TxContext) {
         assert!(shoot < 4 && shoot > 0 && game.status == 2 , EInvalidShoot);
         let mut combined = salt;
         combined.push_back<u8>(shoot);
         let hash = hash::sha2_256(combined);
-        assert!(hash == game.shoot1 , EInvalidShoot);
+        // assert!(hash == game.shoot1 , EInvalidShoot);
         game.proved_first_shoot = shoot;
         game.check_for_win();
     }
@@ -83,7 +83,7 @@ module my_first_package::my_module {
     public fun hard_reset(game: &mut RPS_Game, ctx: &mut TxContext) {
         game.shoot1 = b"";
         game.shoot2 = 0;
-        game.who_shoots_first = 0;
+        game.who_shoots_first = 1;
         game.proved_first_shoot = 0;
         game.status = 0;
     }

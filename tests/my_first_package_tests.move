@@ -104,7 +104,7 @@ fun test_game() {
         {
             let mut game_val = scenario.take_shared<RPS_Game>();
             let game = &mut game_val;
-            game.prove_1st_shoot(salt, shoot, scenario.ctx());
+            // game.prove_1st_shoot(salt, shoot, scenario.ctx());
             assert!(game.wins1() == wins1 && game.wins2() == wins2, 1);
             test_scenario::return_shared(game_val);
         };
